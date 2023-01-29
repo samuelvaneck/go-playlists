@@ -20,6 +20,7 @@ type RadioStation struct {
 
 func RadioStationById(id int) (RadioStation, error) {
 	var radioStation RadioStation
+	var queryErr error
 	var err error
 
 	conn, dbConnectionError := initializers.ConnectToDB()
@@ -27,9 +28,10 @@ func RadioStationById(id int) (RadioStation, error) {
 		log.Fatalf("Unable to connection to database: %v", err)
 		err = dbConnectionError
 	}
-	err = conn.QueryRow(context.Background(), "SELECT * FROM radio_stations WHERE id = $1", id).Scan(&radioStation.Id, &radioStation.Name, &radioStation.CreatedAt, &radioStation.UpdatedAt, &radioStation.Api_url, &radioStation.Stream_url, &radioStation.Scraper_processor, &radioStation.Scraper_import)
-	if err != nil {
-		log.Fatal(err)
+	queryErr = conn.QueryRow(context.Background(), "SELECT * FROM radio_stations WHERE id = $1", id).Scan(&radioStation.Id, &radioStation.Name, &radioStation.CreatedAt, &radioStation.UpdatedAt, &radioStation.Api_url, &radioStation.Stream_url, &radioStation.Scraper_processor, &radioStation.Scraper_import)
+	if queryErr != nil {
+		log.Fatalf("Unable to query database: %v", err)
+		err = queryErr
 	}
 	return radioStation, err
 }
