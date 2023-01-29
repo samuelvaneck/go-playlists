@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"playlists/pkgs/controllers"
 	"playlists/pkgs/initializers"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,11 +17,6 @@ func init() {
 }
 
 func main() {
-	app := fiber.New()
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
 	conn, err := initializers.ConnectToDB()
 	if err != nil {
 		log.Fatalf("Unable to connection to database: %v", err)
@@ -30,6 +26,14 @@ func main() {
 	if pingErr != nil {
 		log.Fatalf("Unable to ping database: %v", pingErr)
 	}
+
+	app := fiber.New()
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
+	app.Get("/api/radio_stations", controllers.RadioStationsIndex)
+	app.Get("/api/radio_stations/:id", controllers.RadioStationById)
 
 	fmt.Println("Listening on port", os.Getenv("APP_PORT"))
 	log.Fatal(app.Listen(os.Getenv("APP_PORT")))
