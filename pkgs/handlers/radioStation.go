@@ -53,6 +53,7 @@ func (h handler) GetRadioStation(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"data":    radioStation,
