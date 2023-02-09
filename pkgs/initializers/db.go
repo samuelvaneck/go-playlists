@@ -1,17 +1,26 @@
 package initializers
 
 import (
-	"context"
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func ConnectToDB() (*pgx.Conn, error) {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+var DB *gorm.DB
+
+func ConnectToDB() (*gorm.DB, error) {
+	var err error
+	dsn := os.Getenv("DATABASE_URL")
+	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
 	if err != nil {
-		log.Fatalf("Unable to connection to database: %v", err)
+		log.Fatalf("Unable to connect to database: %v", err)
+		return nil, err
 	}
-	return conn, nil
+
+	log.Println("Connected to database")
+
+	return DB, nil
 }
