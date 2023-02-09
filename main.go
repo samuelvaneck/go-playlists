@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	handlers "playlists/pkgs/handlers"
+	"playlists/pkgs/handlers"
 	"playlists/pkgs/initializers"
-	model "playlists/pkgs/models"
+	models "playlists/pkgs/models"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to connection to database: %v", err)
 	}
-	DB.AutoMigrate(&model.RadioStation{}, &model.Playlist{})
+	DB.AutoMigrate(&models.RadioStation{}, &models.Playlist{}, &models.Song{})
 
 	h := handlers.New(DB)
 	app := fiber.New()
@@ -33,7 +33,8 @@ func main() {
 	app.Get("/api/radio_stations/:id", h.GetRadioStation)
 	app.Get("/api/playlists", h.GetAllPlaylists)
 	app.Get("/api/playlists/:id", h.GetPlaylist)
+	app.Get("/api/songs", h.GetAllSongs)
+	app.Get("/api/songs/:id", h.GetSong)
 
 	fmt.Println("Listening on port", os.Getenv("APP_PORT"))
-	log.Fatal(app.Listen(os.Getenv("APP_PORT")))
 }
