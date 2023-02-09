@@ -2,14 +2,14 @@ package handlers
 
 import (
 	"log"
-	model "playlists/pkgs/models"
+	models "playlists/pkgs/models"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func (h handler) GetAllPlaylists(c *fiber.Ctx) error {
-	var playlists []model.Playlist
+	var playlists []models.Playlist
 	var err error
 
 	queryError := h.DB.Find(&playlists).Error
@@ -31,7 +31,7 @@ func (h handler) GetAllPlaylists(c *fiber.Ctx) error {
 }
 
 func (h handler) GetPlaylist(c *fiber.Ctx) error {
-	var playlist model.Playlist
+	var playlist models.Playlist
 	var id int
 	var err error
 

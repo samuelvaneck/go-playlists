@@ -8,11 +8,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h handler) GetAllRadioStations(c *fiber.Ctx) error {
-	var radioStations []models.RadioStation
+func (h handler) GetAllSongs(c *fiber.Ctx) error {
+	var songs []models.Song
 	var err error
 
-	queryError := h.DB.Find(&radioStations).Error
+	queryError := h.DB.Find(&songs).Error
 	if queryError != nil {
 		err = queryError
 	}
@@ -25,13 +25,13 @@ func (h handler) GetAllRadioStations(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    radioStations,
-		"message": "Radio stations fetched successfully",
+		"data":    songs,
+		"message": "Songs fetched successfully",
 	})
 }
 
-func (h handler) GetRadioStation(c *fiber.Ctx) error {
-	var radioStation models.RadioStation
+func (h handler) GetSong(c *fiber.Ctx) error {
+	var song models.Song
 	var id int
 	var err error
 
@@ -42,7 +42,7 @@ func (h handler) GetRadioStation(c *fiber.Ctx) error {
 		})
 	}
 
-	queryError := h.DB.Find(&radioStation, id).Error
+	queryError := h.DB.Find(&song, id).Error
 	if queryError != nil {
 		log.Fatalf("Unable to query database: %v", err)
 		err = queryError
@@ -56,7 +56,7 @@ func (h handler) GetRadioStation(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    radioStation,
-		"message": "Radio station fetched successfully",
+		"data":    song,
+		"message": "Song fetched successfully",
 	})
 }
