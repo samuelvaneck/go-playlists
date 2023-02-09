@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h handler) GetAllSongs(c *fiber.Ctx) error {
+func (h Handler) GetAllSongs(c *fiber.Ctx) error {
 	var songs []models.Song
 	var err error
 
@@ -30,7 +30,7 @@ func (h handler) GetAllSongs(c *fiber.Ctx) error {
 	})
 }
 
-func (h handler) GetSong(c *fiber.Ctx) error {
+func (h Handler) GetSong(c *fiber.Ctx) error {
 	var song models.Song
 	var id int
 	var err error

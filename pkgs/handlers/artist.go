@@ -8,11 +8,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h Handler) GetAllPlaylists(c *fiber.Ctx) error {
-	var playlists []models.Playlist
+func (h Handler) GetAllArtists(c *fiber.Ctx) error {
+	var artists []models.Artist
 	var err error
 
-	queryError := h.DB.Find(&playlists).Error
+	queryError := h.DB.Find(&artists).Error
 	if queryError != nil {
 		err = queryError
 	}
@@ -25,13 +25,13 @@ func (h Handler) GetAllPlaylists(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    playlists,
-		"message": "Playlists fetched successfully",
+		"data":    artists,
+		"message": "Artists fetched successfully",
 	})
 }
 
-func (h Handler) GetPlaylist(c *fiber.Ctx) error {
-	var playlist models.Playlist
+func (h Handler) GetArtist(c *fiber.Ctx) error {
+	var artist models.Artist
 	var id int
 	var err error
 
@@ -42,7 +42,7 @@ func (h Handler) GetPlaylist(c *fiber.Ctx) error {
 		})
 	}
 
-	queryError := h.DB.Find(&playlist, id).Error
+	queryError := h.DB.Find(&artist, id).Error
 	if queryError != nil {
 		log.Fatalf("Unable to query database: %v", err)
 		err = queryError
@@ -53,9 +53,10 @@ func (h Handler) GetPlaylist(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    playlist,
-		"message": "Playlist fetched successfully",
+		"data":    artist,
+		"message": "Artist fetched successfully",
 	})
 }

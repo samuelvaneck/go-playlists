@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h handler) GetAllRadioStations(c *fiber.Ctx) error {
+func (h Handler) GetAllRadioStations(c *fiber.Ctx) error {
 	var radioStations []models.RadioStation
 	var err error
 
@@ -30,7 +30,7 @@ func (h handler) GetAllRadioStations(c *fiber.Ctx) error {
 	})
 }
 
-func (h handler) GetRadioStation(c *fiber.Ctx) error {
+func (h Handler) GetRadioStation(c *fiber.Ctx) error {
 	var radioStation models.RadioStation
 	var id int
 	var err error
