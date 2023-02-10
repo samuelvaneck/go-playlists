@@ -8,6 +8,8 @@ import (
 	"playlists/pkgs/initializers"
 	models "playlists/pkgs/models"
 	"playlists/pkgs/routes"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func init() {
@@ -23,7 +25,9 @@ func main() {
 	DB.AutoMigrate(&models.RadioStation{}, &models.Playlist{}, &models.Song{}, &models.Artist{})
 
 	h := handlers.New(DB)
-	routes.AllRoutes(h)
+	app := fiber.New()
+	routes.AllRoutes(app, h)
 
 	fmt.Println("Listening on port", os.Getenv("APP_PORT"))
+	log.Fatal(app.Listen(os.Getenv("APP_PORT")))
 }
