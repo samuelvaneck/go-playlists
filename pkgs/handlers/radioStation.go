@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
-	"os/exec"
 	models "playlists/pkgs/models"
 	"strconv"
 
@@ -64,29 +62,34 @@ func (h Handler) GetRadioStation(c *fiber.Ctx) error {
 }
 
 func (h Handler) RecognizeSong(c *fiber.Ctx) error {
-	var out []byte
-	out, err := exec.Command("ls", "-l", "../../tmp").Output()
-	if err != nil {
-		log.Fatal(err)
+	var id int
+	var radioStation models.RadioStation
+	var err error
+
+	id, convErr := strconv.Atoi(c.Params("id"))
+	if convErr != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   convErr.Error(),
+			"message": "Unable to convert id to integer",
+			"success": false,
+		})
 	}
 
-	// if errors.Is(cmd.Err, exec.ErrDot) {
-	// 	cmd.Err = nil
-	// }
-	// if err := cmd.Run(); err != nil {
-	// 	log.Fatal(err)
-	// }
+	queryError := h.DB.Find(&radioStation, id).Error
+	if queryError != nil {
+		log.Fatalf("Unable to query database: %v", err)
+		err = queryError
+	}
 
-	// out, err := cmd.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	parsedOut := fmt.Sprintf("%s", out)
+	recognizedSong, recErr := radioStation.RecognizeSong()
+	if recErr != nil {
+		log.Fatalf("Unable to recognize song: %v", err)
+		err = recErr
+	}
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    parsedOut,
+		"data":    recognizedSong,
 		"message": "Song recognized successfully",
 	})
 }
