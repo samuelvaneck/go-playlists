@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
+	"os/exec"
 	models "playlists/pkgs/models"
 	"strconv"
 
@@ -58,5 +60,33 @@ func (h Handler) GetRadioStation(c *fiber.Ctx) error {
 		"success": true,
 		"data":    radioStation,
 		"message": "Radio station fetched successfully",
+	})
+}
+
+func (h Handler) RecognizeSong(c *fiber.Ctx) error {
+	var out []byte
+	out, err := exec.Command("ls", "-l", "../../tmp").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// if errors.Is(cmd.Err, exec.ErrDot) {
+	// 	cmd.Err = nil
+	// }
+	// if err := cmd.Run(); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// out, err := cmd.Output()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	parsedOut := fmt.Sprintf("%s", out)
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    parsedOut,
+		"message": "Song recognized successfully",
 	})
 }
