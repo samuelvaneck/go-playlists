@@ -85,15 +85,27 @@ func (h Handler) RecognizeSong(c *fiber.Ctx) error {
 
 	recognizedSong, recErr := radioStation.RecognizeSong()
 	if recErr != nil {
-		log.Fatalf("Unable to recognize song: %v", err)
+		log.Fatalf("Unable to recognize song: %v", recErr)
 		err = recErr
 	}
 
-	json.Unmarshal([]byte(recognizedSong), &result)
+	parseErr := json.Unmarshal([]byte(recognizedSong), &result)
+	if parseErr != nil {
+		log.Fatalf("Unable to parse json: %v", parseErr)
+		err = parseErr
+	}
 
-	return c.JSON(fiber.Map{
-		"success": true,
-		"data":    result,
-		"message": "Song recognized successfully",
-	})
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error":   err.Error(),
+			"message": "Unable to recognize song",
+			"success": false,
+		})
+	} else {
+		return c.JSON(fiber.Map{
+			"success": true,
+			"data":    result,
+			"message": "Song recognized successfully",
+		})
+	}
 }
