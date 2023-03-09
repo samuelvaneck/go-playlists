@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	models "playlists/pkgs/models"
 	"strconv"
@@ -65,6 +66,7 @@ func (h Handler) RecognizeSong(c *fiber.Ctx) error {
 	var id int
 	var radioStation models.RadioStation
 	var err error
+	var result map[string]interface{}
 
 	id, convErr := strconv.Atoi(c.Params("id"))
 	if convErr != nil {
@@ -87,9 +89,11 @@ func (h Handler) RecognizeSong(c *fiber.Ctx) error {
 		err = recErr
 	}
 
+	json.Unmarshal([]byte(recognizedSong), &result)
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"data":    recognizedSong,
+		"data":    result,
 		"message": "Song recognized successfully",
 	})
 }
