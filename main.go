@@ -15,10 +15,15 @@ import (
 func init() {
 	initializers.LoadEnv()
 	initializers.ConnectToDB()
+	initializers.ConnectToRedis()
 }
 
 func main() {
 	DB, err := initializers.ConnectToDB()
+	redisConnection, err := initializers.ConnectToRedis()
+
+	fmt.Fprint(os.Stdout, "Redis connection: ", redisConnection, "")
+
 	if err != nil {
 		log.Fatalf("Unable to connection to database: %v", err)
 	}
