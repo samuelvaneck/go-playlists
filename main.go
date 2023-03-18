@@ -8,6 +8,7 @@ import (
 	"playlists/pkgs/initializers"
 	models "playlists/pkgs/models"
 	"playlists/pkgs/routes"
+	services "playlists/pkgs/services"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,6 +28,8 @@ func main() {
 	h := handlers.New(DB)
 	app := fiber.New()
 	routes.AllRoutes(app, h)
+
+	go services.SongRecognizer()
 
 	fmt.Println("Listening on port", os.Getenv("APP_PORT"))
 	log.Fatal(app.Listen(os.Getenv("APP_PORT")))

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"playlists/pkgs/initializers"
 
 	"gorm.io/gorm"
 )
@@ -51,4 +52,32 @@ func (r *RadioStation) CaptureStream() error {
 
 func (r RadioStation) outputFile() string {
 	return fmt.Sprintf("tmp/%s.mp3", r.Name)
+}
+
+func GetRadioStation(id int64) (RadioStation, error) {
+	var radioStation RadioStation
+	db, err := initializers.ConnectToDB()
+	if err != nil {
+		return radioStation, err
+	}
+
+	queryErr := db.First(&radioStation, id).Error
+	if queryErr != nil {
+		return radioStation, err
+	}
+	return radioStation, nil
+}
+
+func AllRadioStations() ([]RadioStation, error) {
+	var radioStations []RadioStation
+	db, err := initializers.ConnectToDB()
+	if err != nil {
+		return nil, err
+	}
+
+	queryErr := db.Find(&radioStations).Error
+	if queryErr != nil {
+		return nil, err
+	}
+	return radioStations, nil
 }
