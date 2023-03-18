@@ -29,7 +29,8 @@ func main() {
 	app := fiber.New()
 	routes.AllRoutes(app, h)
 
-	go services.SongRecognizer()
+	// go services.SongRecognizer()
+	services.GetSpotifyToken()
 
 	fmt.Println("Listening on port", os.Getenv("APP_PORT"))
 	log.Fatal(app.Listen(os.Getenv("APP_PORT")))
