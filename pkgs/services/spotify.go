@@ -8,18 +8,46 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/jellydator/ttlcache/v3"
 )
 
 const TokenUrl = "https://accounts.spotify.com/api/token"
 
-type SpotifyToken struct {
+type Token struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func GetSpotifyToken() (string, error) {
-	var token SpotifyToken
+func SpotifyToken(c *ttlcache.Cache[string, string]) (string, error) {
+	var token string
+	var err error
+
+	item := c.Get("spotify_token")
+	if item != nil {
+		fmt.Println("Token from cache")
+		token = item.Value()
+	} else {
+		fmt.Println("Token from request")
+		token, err = getSpotifyToken()
+		c.Set("spotify_token", token, time.Duration(60*time.Minute))
+		if err != nil {
+			return "", err
+		}
+	}
+
+	fmt.Println(" ")
+	fmt.Printf("Token: %s", token)
+	fmt.Println(" ")
+
+	return token, nil
+}
+
+func getSpotifyToken() (string, error) {
+	var token Token
+
 	payload := strings.NewReader("grant_type=client_credentials")
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", TokenUrl, payload)
