@@ -9,30 +9,36 @@ import (
 	models "playlists/pkgs/models"
 	"playlists/pkgs/routes"
 	services "playlists/pkgs/services"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/jellydator/ttlcache/v3"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
+var RedisClient *redis.Client
+var DB *gorm.DB
+
 func init() {
+	var dbError error
+	var redisError error
+
 	initializers.LoadEnv()
-	initializers.ConnectToDB()
+	DB, dbError = initializers.ConnectToDB()
+	if dbError != nil {
+		log.Fatalf("Unable to connect to database: %v", dbError)
+	}
+	RedisClient, redisError = initializers.ConnectToRedis()
+	if redisError != nil {
+		log.Fatalf("Unable to connect to Redis: %v", redisError)
+	}
 }
 
 func main() {
-	DB, err := initializers.ConnectToDB()
-	if err != nil {
-		log.Fatalf("Unable to connection to database: %v", err)
-	}
 	DB.AutoMigrate(&models.RadioStation{}, &models.Playlist{}, &models.Song{}, &models.Artist{})
 
-	c := ttlcache.New[string, string](
-		ttlcache.WithTTL[string, string](60 * time.Minute),
-	)
-	go c.Start()
-
 	h := handlers.New(DB)
+	r := models.NewRedisClient(RedisClient)
+	r.Client.Ping(r.Ctx) // temp
 	app := fiber.New()
 	routes.AllRoutes(app, h)
 

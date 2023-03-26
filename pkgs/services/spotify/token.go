@@ -7,10 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"playlists/pkgs/models"
 	"strings"
-	"time"
-
-	"github.com/jellydator/ttlcache/v3"
 )
 
 const TokenUrl = "https://accounts.spotify.com/api/token"
@@ -21,18 +19,21 @@ type Token struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func SpotifyToken(c *ttlcache.Cache[string, string]) (string, error) {
+func SpotifyToken(r models.RedisClient) (string, error) {
 	var token string
 	var err error
 
-	item := c.Get("spotify_token")
-	if item != nil {
+	token, err = r.GetFromRedis("spotify_token")
+	if err != nil {
+		fmt.Printf("Error getting token from cache: %v", err)
+	}
+
+	if token != "" {
 		fmt.Println("Token from cache")
-		token = item.Value()
 	} else {
 		fmt.Println("Token from request")
 		token, err = getSpotifyToken()
-		c.Set("spotify_token", token, time.Duration(60*time.Minute))
+		r.SetInRedis("spotify_token", token)
 		if err != nil {
 			return "", err
 		}
