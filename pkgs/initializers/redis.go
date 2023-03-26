@@ -3,6 +3,7 @@ package initializers
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -12,7 +13,7 @@ func ConnectToRedis() (*redis.Client, error) {
 	fmt.Println("Testing Golang Redis")
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_URL"),
 		Password: "",
 		DB:       0,
 	})
